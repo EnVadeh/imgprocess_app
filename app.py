@@ -106,8 +106,9 @@ def apply_multithresholding(img, thresholds):
     return thres_image * wp_val   
 
 def feat(image):
+    dir_path = "C:/temp"
     th = Entropy_MT(image, 3)
-    cv2.imwrite('feat_output.jpg',apply_multithresholding(image, th))
+    cv2.imwrite(os.path.join(dir_path,'feat_output.jpg'),apply_multithresholding(image, th))
 
 app = Flask(__name__)
 
@@ -121,7 +122,7 @@ def blu_process():
     file.save(os.path.join(dir_path, filename))
     temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     sauvola_threshold(temp_real_image)
-    return send_file('sauvola_output.jpg', mimetype='image/jpeg')
+    return send_file(os.path.join(dir_path,'sauvola_output.jpg'), mimetype='image/jpeg')
 
 @app.route('/otsu_process', methods=['PUT'])
 def otsu_process():
@@ -133,7 +134,7 @@ def otsu_process():
     file.save(os.path.join(dir_path, filename))
     temp_real_image = cv2.imread(os.path.join(dir_path, filename))
     otsu(temp_real_image)
-    return send_file('temp_otsu.jpg', mimetype='image/jpeg')
+    return send_file(os.path.join(dir_path,'temp_otsu.jpg'), mimetype='image/jpeg')
 
 @app.route('/FEAT_process', methods=['PUT'])
 def FEAT_process():
@@ -145,7 +146,7 @@ def FEAT_process():
     file.save(os.path.join(dir_path, filename))
     temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     feat(temp_real_image)
-    return send_file('feat_output.jpg', mimetype='image/jpeg')
+    return send_file(os.path.join(dir_path,'feat_output.jpg'), mimetype='image/jpeg')
 
 @app.route('/niblack_m', methods=['PUT'])
 def niblack_m():
@@ -157,7 +158,7 @@ def niblack_m():
     file.save(os.path.join(dir_path, filename))
     temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     niblack_manual(temp_real_image)
-    return send_file('niblack_output.jpg', mimetype='image/jpeg')
+    return send_file(os.path.join(dir_path,'niblack_output.jpg'), mimetype='image/jpeg')
 
 @app.route('/niblack_o', methods=['PUT'])
 def niblack_o():
@@ -169,7 +170,7 @@ def niblack_o():
     file.save(os.path.join(dir_path, filename))
     temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     niblack_optimized(temp_real_image)
-    return send_file('niblack_optimized.jpg', mimetype='image/jpeg')
+    return send_file(os.path.join(dir_path,'niblack_optimized.jpg'), mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run()
