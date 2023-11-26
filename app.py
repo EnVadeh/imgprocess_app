@@ -17,14 +17,14 @@ def sauvola_threshold(image):
     R=128
     if len(image.shape) > 2:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
+    dir_path = "C:/temp"
     image = image.astype(np.float32)
     mean = cv2.blur(image, (window_size, window_size))
     mean_square = cv2.blur(image**2, (window_size, window_size))
     standard_deviation = np.sqrt(mean_square - mean**2)
     threshold = mean * (1 + k * ((standard_deviation / R) - 1))
     binary_image = (image > threshold).astype(np.uint8) * 255
-    cv2.imwrite('sauvola_output.jpg', binary_image)
+    cv2.imwrite(os.path.join(dir_path,'sauvola_output.jpg'), binary_image)
 
 def niblack_manual(image):
     window_size=15
@@ -32,7 +32,7 @@ def niblack_manual(image):
     h, w = image.shape
     output_image = np.zeros((h, w), dtype=np.uint8)
     padded_image = np.pad(image, pad_width=window_size // 2, mode='reflect')
-
+    dir_path = "C:/temp"
     for i in range(h):
         for j in range(w):
             window = padded_image[i:i+window_size, j:j+window_size]
@@ -43,25 +43,27 @@ def niblack_manual(image):
                 output_image[i, j] = 255
             else:
                 output_image[i, j] = 0
-    cv2.imwrite('niblack_output.jpg', output_image)
+    cv2.imwrite(os.path.join(dir_path,'niblack_output.jpg'), output_image)
 
 def niblack_optimized(image):
     window_size=15
     k = 0.2
     if len(image.shape) > 2:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    dir_path = "C:/temp"
     image = image.astype(np.float32)
     mean = cv2.blur(image, (window_size, window_size))
     mean_square = cv2.blur(image**2, (window_size, window_size))
     standard_deviation = np.sqrt(mean_square - mean**2)
     threshold = mean + k * standard_deviation
     binary_image = (image > threshold).astype(np.uint8) * 255
-    cv2.imwrite('niblack_optimized.jpg', binary_image)
+    cv2.imwrite(os.path.join(dir_path,'niblack_optimized.jpg'), binary_image)
 
 def otsu(image):
+    dir_path = "C:/temp"
     im_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     th, im_gray_th_otsu = cv2.threshold(im_gray, 128, 192, cv2.THRESH_OTSU)
-    cv2.imwrite('temp_otsu.jpg', im_gray_th_otsu)
+    cv2.imwrite(os.path.join(dir_path,'temp_otsu.jpg'), im_gray_th_otsu)
 
 def regional_entropy(hist, cum_hist, thresholds):
     total_entropy = 0
@@ -113,8 +115,11 @@ app = Flask(__name__)
 def blu_process():
     file = request.files['balls']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('img_process_temp', filename))
-    temp_real_image = cv2.imread(os.path.join('img_process_temp', filename),0)
+    dir_path = "C:/temp"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file.save(os.path.join(dir_path, filename))
+    temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     sauvola_threshold(temp_real_image)
     return send_file('sauvola_output.jpg', mimetype='image/jpeg')
 
@@ -122,8 +127,11 @@ def blu_process():
 def otsu_process():
     file = request.files['balls']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('img_process_temp', filename))
-    temp_real_image = cv2.imread(os.path.join('img_process_temp', filename))
+    dir_path = "C:/temp"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file.save(os.path.join(dir_path, filename))
+    temp_real_image = cv2.imread(os.path.join(dir_path, filename))
     otsu(temp_real_image)
     return send_file('temp_otsu.jpg', mimetype='image/jpeg')
 
@@ -131,8 +139,11 @@ def otsu_process():
 def FEAT_process():
     file = request.files['balls']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('img_process_temp', filename))
-    temp_real_image = cv2.imread(os.path.join('img_process_temp', filename),0)
+    dir_path = "C:/temp"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file.save(os.path.join(dir_path, filename))
+    temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     feat(temp_real_image)
     return send_file('feat_output.jpg', mimetype='image/jpeg')
 
@@ -140,8 +151,11 @@ def FEAT_process():
 def niblack_m():
     file = request.files['balls']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('img_process_temp', filename))
-    temp_real_image = cv2.imread(os.path.join('img_process_temp', filename),0)
+    dir_path = "C:/temp"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file.save(os.path.join(dir_path, filename))
+    temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     niblack_manual(temp_real_image)
     return send_file('niblack_output.jpg', mimetype='image/jpeg')
 
@@ -149,8 +163,11 @@ def niblack_m():
 def niblack_o():
     file = request.files['balls']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('img_process_temp', filename))
-    temp_real_image = cv2.imread(os.path.join('img_process_temp', filename),0)
+    dir_path = "C:/temp"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file.save(os.path.join(dir_path, filename))
+    temp_real_image = cv2.imread(os.path.join(dir_path, filename),0)
     niblack_optimized(temp_real_image)
     return send_file('niblack_optimized.jpg', mimetype='image/jpeg')
 
